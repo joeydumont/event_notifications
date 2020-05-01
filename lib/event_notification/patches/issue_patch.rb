@@ -3,7 +3,7 @@ module EventNotification
     module IssuePatch
 
       def self.included(base) # :nodoc:
-        #base.send(:include, InstanceMethods)
+        base.send(:include, InstanceMethods)
         base.extend(InstanceMethods)
 
         base.class_eval do

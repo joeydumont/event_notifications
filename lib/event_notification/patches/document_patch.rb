@@ -3,12 +3,12 @@ module EventNotification
     module DocumentPatch
 
       def self.included(base) # :nodoc:
-        #base.send(:include, InstanceMethods)
-        base.extends(InstanceMethods)
-        #base.class_eval do
-        #  unloadable
+        base.send(:include, InstanceMethods)
+        base.extend(InstanceMethods)
+        base.class_eval do
+          unloadable
         #  alias_method_chain :notified_users, :events
-        #end
+        end
       end
 
       module InstanceMethods

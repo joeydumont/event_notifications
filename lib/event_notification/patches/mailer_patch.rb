@@ -8,7 +8,7 @@ module EventNotification
         base.extend(ClassMethods)
         base.send(:include, InstanceMethods)
         base.instance_eval do
-          alias_method_chain :attachments_added, :events
+          #alias_method_chain :attachments_added, :events
           alias_method :old_mail, :mail
 
           define_method(:mail) do |headers={}, &block|
@@ -88,7 +88,7 @@ module EventNotification
       end
 
       module InstanceMethods
-        def attachments_added_with_events(attachments)
+        def attachments_added(attachments)
           if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
             container = attachments.first.container
             added_to = ''
@@ -115,7 +115,7 @@ module EventNotification
             mail :to => recipients,
                  :subject => "[#{container.project.name}] #{l(:label_attachment_new)}"
           else
-            attachments_added_without_events(attachments)
+            super(attachments)
           end
         end
 
