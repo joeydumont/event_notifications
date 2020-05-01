@@ -4,7 +4,7 @@ module EventNotification
 
       def self.included(base) # :nodoc:
         base.send(:include, InstanceMethods)
-
+        #base.extends(InstanceMethods)
         base.class_eval do
           unloadable
           before_save         :set_issue_updated_options

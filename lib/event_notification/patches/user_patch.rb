@@ -8,9 +8,9 @@ module EventNotification
 
         base.class_eval do
           unloadable
-          alias_method_chain 'notified_project_ids=', 'events'
-          alias_method_chain :update_notified_project_ids, :events
-          alias_method_chain :notify_about?, :event
+          #alias_method_chain 'notified_project_ids=', 'events'
+          #alias_method_chain :update_notified_project_ids, :events
+          #alias_method_chain :notify_about?, :event
         end
       end
 
@@ -40,7 +40,7 @@ module EventNotification
           self.pref[:ghost_mode] == '1'
         end
 
-        def notified_project_ids_with_events=(ids)
+        def notified_project_ids=(ids)
           logger.debug("Event Notifications: PATCH - notified_project_ids_with_events ids #{ids}")
           if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
             @notified_projects_ids_changed = true
@@ -72,7 +72,7 @@ module EventNotification
               end
             end
           else
-            update_notified_project_ids_without_events
+            super
           end
         end
 
@@ -146,7 +146,7 @@ module EventNotification
           end
         end
 
-        def notify_about_with_event?(object)
+        def notify_about?(object)
           return false if self.class.get_notification == false || User.current.ghost?
           if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
             logger.debug("Event Notifications: Mail notification option for #{self.name} : #{mail_notification} : #{object.class.name}")
@@ -176,7 +176,7 @@ module EventNotification
               end
             end
           else
-            notify_about_without_event?(object)
+            super(object)
           end
         end
       end

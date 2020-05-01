@@ -4,15 +4,15 @@ module EventNotification
 
       def self.included(base) # :nodoc:
         base.send(:include, InstanceMethods)
-
+        #base.extends(InstanceMethods)
         base.class_eval do
           unloadable
-          alias_method_chain :notified_watchers, :events
-        end
+#          alias_method_chain :notified_watchers, :events
+       end
       end
 
       module InstanceMethods
-        def notified_watchers_with_events
+        def notified_watchers
           return [] if User.current.ghost? || User.current.admin_ghost? || User.get_notification == false
           if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
             notified = watcher_users.active.to_a
@@ -22,7 +22,7 @@ module EventNotification
             end
             notified            
           else
-            notified_watchers_without_events
+            super
           end
         end
       end

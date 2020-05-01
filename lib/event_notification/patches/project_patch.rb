@@ -12,7 +12,7 @@ module EventNotification
           safe_attributes :notify_non_member,
             :if => lambda {|project, user| project.new_record? || user.allowed_to?(:edit_project, project) }
 
-          alias_method_chain :notified_users, :events
+          #alias_method_chain :notified_users, :events
         end
       end
 
@@ -25,7 +25,7 @@ module EventNotification
           format_store[:notify_non_member] = val
         end
         
-        def notified_users_with_events(object=nil)
+        def notified_users(object=nil)
           return [] if User.current.ghost? || User.current.admin_ghost? || User.get_notification == false
           if !object.nil? && Setting.plugin_event_notifications["enable_event_notifications"] == "on"
             logger.debug("Event Notifications: Notified Users : Select project users activated the event.")
@@ -48,7 +48,7 @@ module EventNotification
             collected_principals
           else
             # members.select {|m| m.principal.present? && (m.mail_notification? || m.principal.mail_notification == 'all')}.collect {|m| m.principal}
-            notified_users_without_events
+            super
           end
         end
       end

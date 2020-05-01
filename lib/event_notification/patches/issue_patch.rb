@@ -3,7 +3,8 @@ module EventNotification
     module IssuePatch
 
       def self.included(base) # :nodoc:
-        base.send(:include, InstanceMethods)
+        #base.send(:include, InstanceMethods)
+        base.extend(InstanceMethods)
 
         base.class_eval do
           unloadable
@@ -11,9 +12,9 @@ module EventNotification
           validate :journal_admin_ghost, :if => Proc.new { |issue| !ActiveRecord::Base.record_timestamps && issue.current_journal.present? && !User.current.admin_ghost? } 
 
           before_save :set_new_issue_record
-          alias_method_chain :notified_users, :events
-          alias_method_chain :create_journal, :ghost
-          alias_method_chain :force_updated_on_change, :admin_ghost
+          #alias_method_chain :notified_users, :events
+          #alias_method_chain :create_journal, :ghost
+          #alias_method_chain :force_updated_on_change, :admin_ghost
         end
       end
 
@@ -22,15 +23,15 @@ module EventNotification
           errors.add :base, l(:error_admin_ghost_mode)
         end
 
-        def force_updated_on_change_with_admin_ghost
+        def force_updated_on_change
           return if User.current.admin_ghost?
-          force_updated_on_change_without_admin_ghost
+          super
         end
 
-        def create_journal_with_ghost
+        def create_journal
           return if User.current.admin_ghost?
           current_journal.notify= false if User.current.ghost? && current_journal
-          create_journal_without_ghost
+          super
         end
 
         def set_new_issue_record
@@ -99,7 +100,7 @@ module EventNotification
           notified
         end
 
-        def notified_users_with_events
+        def notified_users
           return [] if User.current.ghost? || User.current.admin_ghost? || User.get_notification == false
           if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
             notified = []
@@ -128,7 +129,7 @@ module EventNotification
             notified.reject! {|user| !visible?(user)} unless project.notify_non_member
             notified
           else
-            notified_users_without_events
+            super
           end
         end
       end
